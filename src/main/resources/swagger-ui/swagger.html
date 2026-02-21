@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>API 文档</title>
+  <!-- Swagger UI 核心样式 -->
+  <link rel="stylesheet" href="swagger-ui/swagger-ui.css">
+  <link rel="icon" type="image/png" href="swagger-ui/favicon-32x32.png" sizes="32x32" />
+</head>
+
+<body>
+  <div id="swagger-ui"></div>
+  <script src="swagger-ui/swagger-ui-bundle.js"></script>
+  <script src="swagger-ui/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function () {
+      // Swagger UI
+      SwaggerUIBundle({
+        // OpenAPI 文档的路径，默认路径为 /docs/docs.yaml，此处使用自定义的文档路径，
+        url: '/doc.yaml',
+        // 指定 Swagger UI 要挂载的 HTML 元素 ID
+        dom_id: '#swagger-ui',
+        // 启用深度链接
+        // 允许通过 URL 直接定位到具体的 API 标签或操作，URL 会随导航变化，方便分享特定 API 的链接
+        deepLinking: true,
+        presets: [
+          // 包含 API 文档的基本展示功能
+          SwaggerUIBundle.presets.apis,
+          // 提供顶部导航栏、接口调试按钮等功能
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          // 允许用户下载当前查看的 OpenAPI 文档
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        // 指定 UI 布局方式
+        layout: "StandaloneLayout",
+        // 展开接口调试功能
+        tryItOutEnabled: true,
+        // 显示请求耗时
+        displayRequestDuration: true,
+        // 启用 API 过滤功能
+        filter: true,
+        // 显示 OpenAPI 的扩展字段
+        showExtensions: true,
+        // 显示通用扩展字段
+        showCommonExtensions: true,
+        // 指定允许在调试按钮中执行的 HTTP 方法
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch']
+      });
+    };
+  </script>
+</body>
+
+</html>
