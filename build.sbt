@@ -5,16 +5,17 @@ ThisBuild / scalaVersion := "3.8.1"
 lazy val root = (project in file("."))
   .settings(
     name := "blog-api",
+    assembly / mainClass := Some("org.a.BlogApiApp"),
     idePackagePrefix := Some("org.a"),
+    Global / bspEnabled := true,
     javaOptions ++= Seq(
       "-Xms64m",
       "-Xmx64m"
     ),
-    Global / bspEnabled := true,
-    assembly / mainClass := Some("org.a.BlogApiApp"),
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", "native-image", xs @ _*) => MergeStrategy.first
       case PathList("META-INF", "versions", xs @ _*)     => MergeStrategy.first
+      case PathList("META-INF", "services", xs @ _*)  => MergeStrategy.concat
       case PathList("META-INF", xs @ _*)              => MergeStrategy.discard
       case PathList("google", "protobuf", xs @ _*)    => MergeStrategy.first
       case PathList("smile", "plot", "vega", xs @ _*) => MergeStrategy.first
