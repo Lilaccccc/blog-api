@@ -5,7 +5,6 @@ import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.HCursor
 import io.circe.generic.semiauto.*
-import org.a.utils.ColoredLogger
 import sttp.tapir.*
 import sttp.tapir.SchemaType.*
 import sttp.tapir.generic.auto.*
@@ -20,6 +19,7 @@ import scala.util.Try
 
 import module.steam.api.{GameApi, SteamAPI}
 import module.steam.cache.SteamInfo
+import utils.ColoredLogger
 import utils.HttpClient
 import utils.route.HttpService.ec
 
@@ -30,11 +30,15 @@ final case class Game(
 
 object Game extends ColoredLogger {
   given Encoder[Game] = deriveEncoder[Game]
-  given Decoder[Game] = (c: HCursor) =>
-    for {
-      gameCount <- c.downFields("response", "game_count").as[Int]
-      games <- c.downFields("response", "games").as[List[GameItem]]
-    } yield Game(gameCount, games)
+  given Decoder[Game] = deriveDecoder[Game]
+
+  object HttpDecoder {
+    given Decoder[Game] = (c: HCursor) =>
+      for {
+        gameCount <- c.downFields("response", "game_count").as[Int]
+        games <- c.downFields("response", "games").as[List[GameItem]]
+      } yield Game(gameCount, games)
+  }
 
   given Schema[Game] = Schema
     .derived[Game]
@@ -42,13 +46,16 @@ object Game extends ColoredLogger {
     .modify(_.gameCount)(_.description("游戏数量").encodedExample(81))
     .modify(_.games)(_.description("游戏列表"))
 
-  def apply: Option[Game] = {
+  def game: Option[Game] = {
     val info = SteamInfo.apply
     val future = for {
-      game <- HttpClient.sendGetRequest[Game](
-        SteamAPI.GetOwnedGames.url,
-        Map("key" -> info.key, "steamid" -> info.id)
-      )
+      game <- {
+        import Game.HttpDecoder.given
+        HttpClient.sendGetRequest[Game](
+          SteamAPI.GetOwnedGames.url,
+          Map("key" -> info.key, "steamid" -> info.id)
+        )
+      }
 
       achievements <- Future.sequence:
         GameApi.values.map: gameApi =>

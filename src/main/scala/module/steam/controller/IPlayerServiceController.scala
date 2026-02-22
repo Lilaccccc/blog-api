@@ -9,6 +9,7 @@ import utils.route.RouteOps.logic
 import org.apache.pekko.http.scaladsl.server.Route
 import sttp.tapir.*
 import sttp.tapir.json.circe.*
+import org.a.module.steam.cache.GameCache
 
 object IPlayerServiceEndpoint {
   val getGamesEndpoint = endpoint.get
@@ -24,7 +25,7 @@ class IPlayerServiceController extends Controller {
 
   override def route: Route = IPlayerServiceEndpoint.getGamesEndpoint.logic {
     _ =>
-      Game.apply match
+      GameCache.apply match
         case Some(game) => Result(game)
         case None => Result(StatusCode.DataNotFound, None.asInstanceOf[Game])
   }

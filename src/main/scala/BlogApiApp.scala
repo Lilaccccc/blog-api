@@ -12,8 +12,6 @@ object BlogApiApp extends KyoApp:
     .map(_.corsRoute)
     .appended(OpenApiController(apis.flatMap(_.endpointList)).routes)
 
-  println(apis.flatMap(_.endpointList))
-
   run {
     direct {
       InitService.apply.now
