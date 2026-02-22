@@ -6,14 +6,14 @@ import module.steam.cache.SteamInfo
 import utils.HttpClient
 import utils.route.HttpService.ec
 
-import io.circe.{Decoder, Encoder, HCursor}
 import io.circe.generic.semiauto.*
+import io.circe.{Decoder, Encoder, HCursor}
 import sttp.tapir.*
 import sttp.tapir.SchemaType.*
 import sttp.tapir.generic.auto.*
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.*
+import scala.concurrent.{Await, Future}
 
 final case class PlayerResponse(
     players: List[Player]
@@ -67,21 +67,19 @@ object Player {
 
   def player: Option[Player] = {
     val info = SteamInfo.apply
-    val playerRequest: Future[PlayerResponse] =
-      HttpClient.sendGetRequest[PlayerResponse](
+    
+    val future: Future[(PlayerResponse, LevelResponse)] = for {
+      player <- HttpClient.sendGetRequest[PlayerResponse](
         SteamAPI.GetPlayerSummaries.url,
         Map("key" -> info.key, "steamids" -> info.id)
       )
-    val levelRequest: Future[LevelResponse] =
-      HttpClient.sendGetRequest[LevelResponse](
+      level <- HttpClient.sendGetRequest[LevelResponse](
         SteamAPI.GetSteamLevel.url,
         Map("key" -> info.key, "steamid" -> info.id)
       )
-    val request: Future[(PlayerResponse, LevelResponse)] = for {
-      player <- playerRequest
-      level <- levelRequest
     } yield (player, level)
-    val (playerResponse, levelResponse) = Await.result(request, 2.seconds)
+
+    val (playerResponse, levelResponse) = Await.result(future, 2.seconds)
     playerResponse.players.headOption.map { playerData =>
       playerData.copy(level = Option(levelResponse.playerLevel))
     }

@@ -1,17 +1,15 @@
 package org.a
 package module.steam.controller
 
-import org.a.module.steam.cache.PlayerCache
-import org.a.utils.result.StatusCode
+import module.steam.cache.PlayerCache
+import module.steam.pojo.Player
+import utils.result.{Result, StatusCode}
+import utils.route.Controller
+import utils.route.RouteOps.logic
+
 import org.apache.pekko.http.scaladsl.server.Route
 import sttp.tapir.*
 import sttp.tapir.json.circe.*
-
-import module.steam.pojo.Player
-import utils.result.Result
-import utils.result.StatusCode.DataNotFound
-import utils.route.Controller
-import utils.route.RouteOps.logic
 
 object ISteamUserEndpoint {
   val getPlayerEndpoint = endpoint.get

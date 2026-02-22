@@ -12,6 +12,7 @@ lazy val root = (project in file("."))
     ),
     Global / bspEnabled := true,
     libraryDependencies ++= Seq(
+      "org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0",
       "com.softwaremill.sttp.tapir" %% "tapir-pekko-http-server" % "1.13.8",
       "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % "1.13.8",
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % "1.13.8",
