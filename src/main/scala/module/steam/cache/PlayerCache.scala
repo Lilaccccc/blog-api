@@ -11,7 +11,7 @@ object PlayerCache {
       case None         =>
         Player.player match
           case Some(player) =>
-            RedisOps.set("steam:player", player, 3600)
+            RedisOps.set("steam:player", player, 8 * 3600)
             Some(player)
           case None => None
   }
